@@ -1,6 +1,21 @@
 import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
 
-export default function Home() {
+async function getCampaigns() {
+  const campaigns = await prisma.campaign.findMany({
+    include: {
+      group: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+  return campaigns
+}
+
+export default async function Home() {
+  const campaigns = await getCampaigns()
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -30,17 +45,35 @@ export default function Home() {
             Featured Campaigns
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Campaign cards will be dynamically rendered here */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-semibold mb-2">Sample Campaign</h3>
-              <p className="text-gray-600 mb-4">
-                $10 per yellow card, $50 per red card
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Goal: $1,000</span>
-                <span className="text-sm text-gray-500">Raised: $500</span>
+            {campaigns.map((campaign) => (
+              <div key={campaign.id} className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-xl font-semibold mb-2">{campaign.title}</h3>
+                <p className="text-gray-600 mb-4">
+                  ${campaign.yellowCardRate} per yellow card, ${campaign.redCardRate} per red card
+                </p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Goal:</span>
+                    <span className="font-semibold">${campaign.goal}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Raised:</span>
+                    <span className="font-semibold">${campaign.currentAmount}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Cards:</span>
+                    <span className="font-semibold">
+                      {campaign.yellowCards} yellow, {campaign.redCards} red
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-sm text-gray-500">
+                    Created by {campaign.group.name}
+                  </p>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

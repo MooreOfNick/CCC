@@ -11,39 +11,63 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(cuid())
-  email         String     @unique
-  name          String?
-  campaigns     Campaign[]
-  donations     Donation[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  donations Donation[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Group {
+  id        String     @id @default(cuid())
+  name      String
+  email     String     @unique
+  campaigns Campaign[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Campaign {
-  id            String     @id @default(cuid())
-  title         String
-  description   String
-  goal          Float
+  id             String     @id @default(cuid())
+  title          String
+  description    String
+  beneficiary    String
+  goal           Float
+  yellowCardRate Float      @default(0)
+  redCardRate    Float      @default(0)
+  yellowCards    Int        @default(0)
+  redCards       Int        @default(0)
+  currentAmount  Float      @default(0)
+  group          Group      @relation(fields: [groupId], references: [id])
+  groupId        String
+  pledges        Pledge[]
+  donations      Donation[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Pledge {
+  id             String   @id @default(cuid())
+  name           String
+  email          String
+  phone          String?
   yellowCardRate Float
-  redCardRate   Float
-  currentAmount Float      @default(0)
-  yellowCards   Int        @default(0)
-  redCards      Int        @default(0)
-  status        String     @default("active")
-  creator       User       @relation(fields: [creatorId], references: [id])
-  creatorId     String
-  donations     Donation[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  redCardRate    Float
+  isAnonymous    Boolean  @default(false)
+  campaign       Campaign @relation(fields: [campaignId], references: [id])
+  campaignId     String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Donation {
-  id            String     @id @default(cuid())
-  amount        Float
-  campaign      Campaign   @relation(fields: [campaignId], references: [id])
-  campaignId    String
-  donor         User       @relation(fields: [donorId], references: [id])
-  donorId       String
-  createdAt     DateTime   @default(now())
+  id         String   @id @default(cuid())
+  amount     Float
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  campaignId String
+  donor      User     @relation(fields: [donorId], references: [id])
+  donorId    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 } 
