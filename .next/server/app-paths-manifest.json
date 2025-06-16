@@ -1,5 +1,7 @@
 {
+  "/campaigns/[id]/thank-you/page": "app/campaigns/[id]/thank-you/page.js",
   "/page": "app/page.js",
   "/campaigns/[id]/pledge/page": "app/campaigns/[id]/pledge/page.js",
+  "/campaigns/page": "app/campaigns/page.js",
   "/campaigns/[id]/page": "app/campaigns/[id]/page.js"
 }

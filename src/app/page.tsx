@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import Navigation from '@/components/Navigation'
 
 async function getCampaigns() {
   const campaigns = await prisma.campaign.findMany({
@@ -18,6 +19,8 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen">
+      <Navigation />
+      
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
         <div className="container mx-auto px-4">

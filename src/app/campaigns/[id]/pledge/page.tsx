@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { createPledge } from '../../actions'
 import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
+import Navigation from '@/components/Navigation'
 
 export default async function PledgePage({ params }: { params: { id: string } }) {
   const campaign = await prisma.campaign.findUnique({
@@ -19,12 +20,18 @@ export default async function PledgePage({ params }: { params: { id: string } })
     const result = await createPledge(formData, params.id)
     if (result.success) {
       redirect(`/campaigns/${params.id}/thank-you`)
+    } else {
+      // For now, just log the error
+      console.error('Failed to create pledge:', result.error)
+      // TODO: Show error to user
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Join the Campaign</h1>

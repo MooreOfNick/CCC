@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+import Navigation from '@/components/Navigation'
 
 async function getCampaign(id: string) {
   const campaign = await prisma.campaign.findUnique({
@@ -23,9 +25,22 @@ export default async function CampaignPage({ params }: { params: { id: string } 
   const campaign = await getCampaign(params.id)
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <div className="mb-6">
+            <Link
+              href="/campaigns"
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeftIcon className="h-5 w-5 mr-2" />
+              <span>Back to Campaigns</span>
+            </Link>
+          </div>
+
           {/* Campaign Header */}
           <div className="bg-white rounded-lg shadow-md p-8 mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">{campaign.title}</h1>
@@ -37,7 +52,20 @@ export default async function CampaignPage({ params }: { params: { id: string } 
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Beneficiary:</span>
-                    <span className="font-medium">{campaign.beneficiary}</span>
+                    <span className="font-medium">
+                      {campaign.beneficiaryUrl ? (
+                        <a
+                          href={campaign.beneficiaryUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {campaign.beneficiary}
+                        </a>
+                      ) : (
+                        campaign.beneficiary
+                      )}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Created by:</span>

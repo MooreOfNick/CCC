@@ -9,7 +9,18 @@ export async function createGroupCampaign(formData: FormData) {
   const title = formData.get('title') as string
   const description = formData.get('description') as string
   const beneficiary = formData.get('beneficiary') as string
+  const beneficiaryUrl = formData.get('beneficiaryUrl') as string
   const goal = parseFloat(formData.get('goal') as string)
+
+  console.log('Creating campaign with data:', {
+    groupName,
+    groupEmail,
+    title,
+    description,
+    beneficiary,
+    beneficiaryUrl,
+    goal
+  })
 
   try {
     // Create or update the group
@@ -22,22 +33,40 @@ export async function createGroupCampaign(formData: FormData) {
       },
     })
 
-    // Create the campaign
-    const campaign = await prisma.campaign.create({
-      data: {
-        title,
-        description,
-        beneficiary,
-        goal,
-        groupId: group.id,
-      },
-    })
+    console.log('Group created/updated:', group)
 
-    revalidatePath('/')
-    return { success: true, campaign }
+    // Create the campaign
+    try {
+      const campaign = await prisma.campaign.create({
+        data: {
+          title,
+          description,
+          beneficiary,
+          beneficiaryUrl: beneficiaryUrl || null,
+          goal,
+          groupId: group.id,
+          yellowCardRate: 10, // Default rate for yellow cards
+          redCardRate: 50,    // Default rate for red cards
+        },
+      })
+
+      console.log('Campaign created:', campaign)
+      revalidatePath('/')
+      return { success: true, campaign }
+    } catch (campaignError) {
+      console.error('Error creating campaign:', campaignError)
+      // If campaign creation fails, we should probably delete the group we just created
+      await prisma.group.delete({
+        where: { id: group.id }
+      })
+      throw campaignError // Re-throw to be caught by outer catch
+    }
   } catch (error) {
-    console.error('Error creating campaign:', error)
-    return { success: false, error: 'Failed to create campaign' }
+    console.error('Error in createGroupCampaign:', error)
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to create campaign'
+    }
   }
 }
 

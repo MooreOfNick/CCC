@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,18 +11,18 @@ model User {
   id        String     @id @default(cuid())
   email     String     @unique
   name      String?
-  donations Donation[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  donations Donation[]
 }
 
 model Group {
   id        String     @id @default(cuid())
   name      String
   email     String     @unique
-  campaigns Campaign[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  campaigns Campaign[]
 }
 
 model Campaign {
@@ -34,17 +31,18 @@ model Campaign {
   description    String
   beneficiary    String
   goal           Float
-  yellowCardRate Float      @default(0)
-  redCardRate    Float      @default(0)
-  yellowCards    Int        @default(0)
-  redCards       Int        @default(0)
-  currentAmount  Float      @default(0)
-  group          Group      @relation(fields: [groupId], references: [id])
   groupId        String
-  pledges        Pledge[]
-  donations      Donation[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+  currentAmount  Float      @default(0)
+  redCardRate    Float      @default(0)
+  redCards       Int        @default(0)
+  yellowCardRate Float      @default(0)
+  yellowCards    Int        @default(0)
+  beneficiaryUrl String?
+  group          Group      @relation(fields: [groupId], references: [id])
+  donations      Donation[]
+  pledges        Pledge[]
 }
 
 model Pledge {
@@ -55,19 +53,19 @@ model Pledge {
   yellowCardRate Float
   redCardRate    Float
   isAnonymous    Boolean  @default(false)
-  campaign       Campaign @relation(fields: [campaignId], references: [id])
   campaignId     String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  campaign       Campaign @relation(fields: [campaignId], references: [id])
 }
 
 model Donation {
   id         String   @id @default(cuid())
   amount     Float
-  campaign   Campaign @relation(fields: [campaignId], references: [id])
   campaignId String
-  donor      User     @relation(fields: [donorId], references: [id])
   donorId    String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-} 
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  donor      User     @relation(fields: [donorId], references: [id])
+}

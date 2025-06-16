@@ -1,19 +1,30 @@
 import { createGroupCampaign } from '../actions'
 import { redirect } from 'next/navigation'
+import Navigation from '@/components/Navigation'
 
 export default function NewCampaign() {
   async function handleSubmit(formData: FormData) {
     'use server'
     
+    console.log('Form submitted with data:', Object.fromEntries(formData.entries()))
+    
     const result = await createGroupCampaign(formData)
-    if (result.success) {
+    console.log('Campaign creation result:', result)
+    
+    if (result.success && result.campaign) {
       redirect(`/campaigns/${result.campaign.id}/pledge`)
+    } else {
+      // For now, just log the error
+      console.error('Failed to create campaign:', result.error)
+      // TODO: Show error to user
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Create a Campaign</h1>
           
@@ -79,6 +90,22 @@ export default function NewCampaign() {
                   placeholder="e.g., Local Children's Hospital"
                   required
                 />
+              </div>
+
+              <div>
+                <label htmlFor="beneficiaryUrl" className="block text-sm font-medium text-gray-700 mb-1">
+                  Beneficiary Website (optional)
+                </label>
+                <input
+                  type="url"
+                  id="beneficiaryUrl"
+                  name="beneficiaryUrl"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="https://example.com"
+                />
+                <p className="mt-1 text-sm text-gray-500">
+                  Add a link to learn more about the beneficiary organization
+                </p>
               </div>
 
               <div>
