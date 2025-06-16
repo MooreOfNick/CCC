@@ -46,7 +46,11 @@ export default async function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {campaigns.map((campaign) => (
-              <div key={campaign.id} className="bg-white rounded-lg shadow-md p-6">
+              <Link 
+                key={campaign.id} 
+                href={`/campaigns/${campaign.id}`}
+                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+              >
                 <h3 className="text-xl font-semibold mb-2">{campaign.title}</h3>
                 <p className="text-gray-600 mb-4">
                   ${campaign.yellowCardRate} per yellow card, ${campaign.redCardRate} per red card
@@ -72,7 +76,7 @@ export default async function Home() {
                     Created by {campaign.group.name}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
